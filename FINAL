@@ -1,0 +1,392 @@
+//variables are used for storing values ()
+var rSlider, gSlider, bSlider; //stores values for the slider
+var x = 1; //width (x-axis)
+var y = 1; //height (y-axis)
+var r = 0; //radius of a circle
+var a = 0; //rotation
+var z = 0; //rotation
+var sliderVolume; //value of the song volume
+var sliderRate; //value of the speed of the song
+var capture; //this values stores camera capture function
+var nums = [100, 25, 45, 72, 30, 90]; // circle sizes from the right side of the screen
+var num = 60; // this value is the size of the circle following the mouse
+var mx = []; //the value of this code, is how many circles are drawn...
+var my = [];//...when there are more then 60 circles, all the invisible circles will disappear
+
+//global variables of the wave, will be used anywhere in the program (almost the same as variables)
+let xspacing = 16; // Distance between each horizontal location
+let w; // Width of entire wave
+let theta = 0.0; // Start angle at 0
+let amplitude = 50.0; // Height of wave
+let period = 500.0; // How many pixels before the wave repeats
+let dx; // Value for increasing x
+let yvalues; // Using an array to store height values for the wave
+
+let bubbles = [];// variable for the amount of bubbles
+
+
+function preload(){ // this function loads these objects before the setup
+    bg = loadImage("assets/background.PNG"); //loads the background image.
+    image1 = loadImage("assets/lasers.JPG"); //loads an image
+    image2 = loadImage("assets/1234.png"); //loads an image
+    rocket = loadImage("assets/rocket.PNG"); //loads an image
+    saturn = loadImage("assets/saturn.PNG"); //loads an image
+    explosion = loadImage("assets/explosion.PNG"); //loads an image
+    clouds = loadImage("assets/clouds.PNG"); //loads an image
+    song = loadSound('assets/music.mp3'); //loads thhe music
+
+ 
+}
+
+
+function setup() {// this function are loaded only on
+    
+    tint(255,0,125); // this gives a pink tint allover the screen
+      
+      // array of bubbles over the screen
+      for (let i = 0; i <30; i++){ // if i = less then 0, then i less then 30. Which means; 30 bubbles
+        let x = random(1066); //random placement x-axis
+        let y = random(1000); //random placement y-axis
+        let r = random(10, 50); //random size of the bubble
+        bubbles[i] = new Bubble(x ,y ,r); // 30 times new bubble, with the random placement and random sizes
+   }
+
+//setup circles following the mouse
+  for (var i = 0; i < num; i++) { //if i = less then 60
+    mx.push(i); //push saves the current drawing syle
+    my.push(i); // allow you to change the style and transformation settings and later return to what you had
+  }
+
+  createCanvas(1366, 1264); // these are the dimesions of the canvas
+  
+  //setup webcam
+  capture = createCapture(VIDEO); //loads the webcam capture
+  capture.size(270, 270); // the size of the camera canvas
+  {
+
+
+
+//setup wave
+ w= width + 16; //width of 1 circle
+  dx = (TWO_PI / period) * xspacing; // the value of increasing the x placement
+  yvalues = new Array(floor(w / xspacing)); //makes sure that the circles follow eachoter
+}
+
+
+
+
+    // setup sliders
+    //colored
+  rSlider = createSlider(0, 255, 0); //this creates the red slider and sets the arrow position of the slider
+  rSlider.position(350, 140); // this sets the position of the red slider
+  gSlider = createSlider(0, 125, 255);//this creates the green slider and sets the arrow position of the slider
+  gSlider.position(350, 180); //this sets the position of the gren slider
+  bSlider = createSlider(0, 255, 255);//this creates the blue slider and sets the arrow position of the slider
+  bSlider.position(350, 220); //this sets the position of the blue slider
+  
+  //sound
+  sliderVolume = createSlider(0, 1, 0.5, 0.01);//this creates the volume slider and arrow position of the slider
+  sliderVolume.position (20,20); //this sets the position of the volume slider
+  sliderRate = createSlider(0, 2, 1, 0.01); //this creates the speed slider and sets the arrow position of the slider
+  sliderRate.position (20,60); //this sets the position of the speed slider
+
+ 
+}
+
+//this code will be drawn over and over again, each frame
+function draw() {
+image(bg, 0, 0); //draw the backgroundimage
+rectMode(CORNER); // this tells all upcoming rectangles, to have their anchor point in the left corner of the object
+
+
+// this draws the rectangle with the 'press&slide'
+if (mouseIsPressed){ //if the mouse is pressed then what's next in the code will appear
+
+  fill(random(237),34,93, 60); // fills the color with random colors, it's flickering because its new each frame
+  rect(0, 720,1366, 100);} // a renctangle, to the left, filling the whole screen and 100px hight
+else{  // if the mouse is not pressed, then the following will happen
+  fill(166,0,83,90); // fill with a solid color, the last number is the alpha/transperency
+     rect(0, 720,1366, 100); // draw the same rectangle
+ }
+ 
+ //these functions chamge the color of the rectangle, the colors will be mixed
+if (keyIsPressed && key == '1') { // if the 1-key is pressed then the following will happen
+        fill(255,70); // the color will be completely white and 70% transparent.
+      rect(0, 720,1366, 100); // the same rectangle will be drawn.
+        }
+if (keyIsPressed && key == '2') { // if the 2-key is pressed then the following will happen
+        fill(220,70); // the same will happen actually, only the color will be slightly darker each number
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '3') {
+        fill(200,70);
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '4') {
+        fill(170,70);
+      rect(0, 720,1366, 100);
+        }
+if (keyIsPressed && key == '5') {
+        fill(150,70);
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '6') {
+        fill(127,70);
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '7') {
+        fill(100,70);
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '8') {
+        fill(70,70);
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '9') {
+        fill(40,70);
+      rect(0, 720,1366, 100);
+        }
+
+if (keyIsPressed && key == '0') { //if the 1-key is pressed then the following will happen
+        fill(0,70); // the color will be completely black and 70% transparent.
+        rect(0, 720,1366, 100); //the same rectangle will be drawn.
+    }
+
+image(image2, 583, 730); // the image with the 'press&slide' will be drwn over the rectangles.
+
+
+image(rocket,mouseX-45,1060); // the rocket will be drawn here, it follows the mouse when it's moving horizontallu
+imageMode(CENTER); // the next images which will drawn will have their anchorpoint in the middle
+var inverseX = width-mouseX; // this makes the image follow the horizontal movements, but it's going the opposite direction
+image(clouds,inverseX,950); // the clouds will be drawn, and will follow the mouse in opp
+imageMode(CORNER); // this tells all upcoming images, to have their anchor point in the left corner of the object
+rectMode(CENTER); // this tells all upcoming rectangles, to have their anchor point in the middle of the object
+
+//black rectangles in the background
+var r1 = map(mouseX, 0, width, 0, 700); // this tells the size and the position of rectangle 1
+  var r2 = 700 - r1; // this tells the size and the position of rectangle 1
+  //rect 1
+  fill(7,0,11,150); // fill it with black/blue color and transparency
+  strokeWeight(100); // line around the object from 100px
+  stroke(7,0,11,50); // fill the stroke in the same color of the rectangle
+  rect(width/2 + r1/2, height/3.5, r1, r1); // this tell how the big the 1st rectangle is and also the position. 
+  //rect 2
+  fill(7,0,11,150); // fill it with black/blue color and transparency
+  strokeWeight(100);  // line around the object from 100px
+  stroke(7,0,11,50); // the stroke in the same color of the rectangle
+  rect(width/2 - r2/2, height/3.5, r2, r2); // this tell how the big the 1st rectangle is and also the position. 
+  
+  rectMode(CORNER); // this tells all upcoming rectangles, to have their anchor point in the left corner of the object
+
+
+// tell the bubbles to be drawn
+ for (let i = 0; i < bubbles.length; i++){ //array of the bubbles
+        bubbles[i].move(); // bubbles moving/dancing
+        bubbles[i].show(); // bubbles drawing
+              }
+
+//draw wave
+  {
+  calcWave(); // calling a function, calculate the position
+  renderWave(); // calling a function, drawing the wave
+}
+
+function calcWave() { // opening the drawing of the wave
+  theta += 0.03; // the speed of the wave moving
+
+  // For every x value, calculate a y value with sine function
+  let x = theta;
+  for (let i = 0; i < yvalues.length; i++) { // this part calculates the positions
+    yvalues[i] = sin(x) * amplitude;
+    x += dx;
+  }
+}
+
+function renderWave() { // drawing the wave
+  stroke(255); // a white line
+  strokeWeight(0.5); // thin line
+  fill(255,50); // white fill with 50% tranparency
+  // A simple way to draw the wave with an ellipse at each location
+  for (let x = 0; x < yvalues.length; x++) {
+    ellipse(x * xspacing, height / 2 + yvalues[x], 16, 16); // 16 px radius circles
+  }
+}
+
+// array of circles (practice)
+for (var i = 0; i < 6; i++){ // draw 6 circles
+  stroke(255,10); //white stroke with 10% transparency
+  strokeWeight(3); // line around the circle with 3px
+  fill(random(237),34,93, 60); // flicker in random colors.
+  ellipse(1270, 70+i * 100, nums[i], nums[i]); // placement and sizes from the variables above, circles drawn
+  
+}
+
+//N2 WEBCAM
+noStroke(); // no stroke
+if (mouseIsPressed){ // when pressing the mouse, following will happen;
+   image(capture, 460, 250, 240, 240); //the webcam will show but the size is bigger
+capture.hide(); // this disables a second video, which otherwise will appear
+fill(7,0,11); // fill dark blue
+ triangle(520, 500, 520, 350, 620, 500); // triangle 1, to show the letter N
+  triangle(630, 240, 630, 370, 550, 250); //triangle 2, to show the letter N
+
+  }
+  else {
+image(capture, 480, 270, 200, 200); //the webcam will show
+capture.hide();// this disables a second video, which otherwise will appear
+fill(7,0,11); // fill dark blue
+  triangle(520, 500, 520, 350, 620, 500); // triangle 1, to show the letter N
+  triangle(630, 240, 630, 370, 550, 250); //triangle 2, to show the letter N
+}
+fill(255); // fill white
+textSize(15); // size of text
+text('click to play/pause and slide for volume', sliderVolume.x * 2 + sliderVolume.width, 35); // text and slider in the left top corner
+text('click to play/pause and slide for speed', sliderRate.x * 2 + sliderRate.width, 75);  // text and slider in the left top corner
+
+function mousePressed() { getAudioContext().resume() } // This part of code makes sure that the audio is able to play
+
+
+
+  var r = rSlider.value(); // making variables with values for the sliders
+  var g = gSlider.value(); // making variables with values for the sliders
+  var b = bSlider.value(); // making variables with values for the sliders
+  fill (r, g, b); // fill it with the values from the sliders, wherever the arrow position is
+  
+// I
+  rect(390,270,43,200,10); // a rectangle, which changes color with the slider
+
+//N 3 DISCO
+  fill( random(255), random(155), random(155), random(155));  // giving random flickering color
+  rect(960,280,180,180,10); // 180x180 rectangle 
+  rect(950,270,200,200,10); // 200x200 rectangle 
+  fill(11,0,13); // fill dark blue
+  triangle(990, 500, 990, 350, 1090, 500); // triangles again to make the N shape
+  triangle(1100, 270, 1100, 370, 1020, 250); // triangles again to make the N shape
+
+
+image(saturn,20,mouseY-40, 130,100); //drawing the saturn image, it follows only the y axis.
+
+//draw mouse follow
+  // Cycle through the array, using a different entry on each frame. 
+  // Using modulo (%) like this is faster than moving all the values over.
+  var which = frameCount % num;
+  mx[which] = mouseX; // telling what values mx and my has
+  my[which] = mouseY; // telling what values mx and my has
+ 
+  for (var i = 1; i < num; i++) { //array for the bubbles
+    // which+1 is the smallest (the oldest in the array)
+    var index = (which+1 + i) % num;
+    fill(88,1,43,150); // fill solid color
+    ellipse(mx[index], my[index], i, i); // th circle will be drawn, it adjusts itself everytime
+  } 
+
+//the left part of the first N
+  fill(255,0,125); // fill pink color
+  rect(160,270, 40, 200,0,0,10,10); // give size and position
+  fill(20); // fill text dark grey
+  textSize(32); // text size 32px
+text('N', 168, 460); // N will be typed at that position
+
+  if (keyIsPressed && key == 'n') { // if the N-key is pressed then,
+  fill(80); // fill it grey
+  rect(160,270, 40, 200,0,0,10,10); // draw rectangle
+  fill(255,0,125); // fill pink
+  textSize(32); //text size 32px
+text('N', 168, 340); // N will be typed at that position
+fill(255,79,167); // a lighter pink color
+text('N', 168, 380); // N will be typed at that position
+fill(255,168,211); // a more lighter pink color
+text('N', 168, 420); // N will be typed at that position
+fill(255,217,236); // an even lighter pink color
+text('N', 168, 460); // N will be typed at that position
+}
+
+  
+// explosion part
+ if (mouseX > 0 && mouseX < 200 &&  // if the horizontal mouse is between 0 and 200 px
+       mouseY > 1000 && mouseY < 1366) { // and the vertical is between 1000 and 1366 px
+  image(explosion, 10,1030,200,200); // then an image of an explosion appears
+  
+}
+  
+
+// Diangonal part first N
+  if (mouseIsPressed){ //if the mouse is pressed;
+    fill(255); // it will fill wit white
+  }
+  else { //otherwise
+    fill(random(237),34,93); // it will fill randomly and flickering
+  }
+   quad(160, 270, 200, 270, 340, 468, 300, 470); // the diagonal part will be drawn here
+  
+
+//right part of the first N
+    if (keyIsPressed === true){ // when pressin the key,, 
+    fill(64,0,64); // fill purple color
+  } else { //otherwise
+    fill(255); //it's white
+  }
+
+
+  // O rotate  
+  rect(300,270,43,200,10,10,10,0); // draw a rectangle
+if (keyIsPressed === true){ // when the key is pressed,
+    fill(237,34,93)// fill it pink
+  } else { //otherwise
+    fill(25); //it's grey
+  }
+rectMode(CENTER); //the anchorpoint of this rectangle is in the middle again
+  translate(width/1.675, height/3.4); // calculating the position
+  rotate(a); // tell to rotate
+  rect(0, 0, 190, 190 ,50); // the rectangle is drawn
+  a = a + 0.03 // telling what side to rotate and how fast.
+//small pink rectangle
+fill(237,34,93); // fill it with pink
+ rotate(z); // rotate other way
+  rect(0, 0, 80, 80,20); // draw the rectangle
+  z = z + -0.05// speed of rotation
+}
+
+{
+function mousePressed() { // calling a function
+  if ( song.isPlaying() ) { // .isPlaying() returns a  // when the mouse is pressed, 
+    song.pause(); // the song is paused
+ 
+  } else { // otherwise 
+    song.play(); //it's playing
+     song.setVolume(sliderVolume.value()); // be able to change te volume
+    song.rate(sliderRate.value()); // be able to change the volume
+    // the music will start with pushing the mouse, but theres another function which first allow the music to play
+    // which makes the code here reversible
+  }
+}
+
+  }
+ class Bubble { // one object with a lot of variables
+  constructor(x, y, r) { // tell which parts need to be drawn
+    this.x = x; // making x variable
+    this.y = y; //making y variable
+    this.r = r; // making r variable
+  }
+
+  move() { 
+    this.x = this.x + random(-5, 5); // tell the circle to move beween -5 and 5 x
+    this.y = this.y + random(-5, 5); // tell the circle to move beween -5 and 5 y
+  }
+
+  show() { // draw circle
+    stroke(255,20); // white stroke with 20% transparency
+    strokeWeight(1); // stroke of 1 px
+    fill(255,10); // fill it white with 10% tranperancy
+    ellipse(this.x, this.y, this.r * 2); // draw the circle with the called variables.
+  }
+}
+
+
+
